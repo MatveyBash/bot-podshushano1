@@ -7,7 +7,8 @@ import os
 
 # Конфигурация бота
 TOKEN = '7624136254:AAHudHeO0ZScnHqlIZmMOW4R1GoAJizqBqg'
-TARGET_CHANNEL = '-1002702796095'  # ID приватного канала (начинается с -100)
+TARGET_CHANNEL_1 = '-1002702796095'  # Первый чат (без ID пользователя)
+TARGET_CHANNEL_2 = '-1003035422039'  # Второй чат (с ID пользователя) - ЗАМЕНИТЕ НА РЕАЛЬНЫЙ ID
 ADMINS = [6172742677, 1616523146, 5683628958]  # ID администраторов
 
 # Чёрный список: {user_id: {'unban_time': datetime или None, 'reason': str, 'banned_by': int, 'ban_date': str}}
@@ -254,27 +255,45 @@ def handle_ban(message):
         bot.reply_to(message, f"❌ Ошибка: {str(e)}")
 
 
-def forward_to_channel(message, caption):
-    """Пересылает сообщение в приватный канал"""
+def forward_to_channels(message, caption_with_id, caption_without_id):
+    """Пересылает сообщение в оба канала с разными подписями"""
     try:
         if message.content_type == 'text':
-            bot.send_message(TARGET_CHANNEL, caption)
+            # В первый канал (без ID)
+            bot.send_message(TARGET_CHANNEL_1, caption_without_id)
+            # Во второй канал (с ID)
+            bot.send_message(TARGET_CHANNEL_2, caption_with_id)
+
         elif message.content_type == 'photo':
-            bot.send_photo(TARGET_CHANNEL, message.photo[-1].file_id, caption=caption)
+            bot.send_photo(TARGET_CHANNEL_1, message.photo[-1].file_id, caption=caption_without_id)
+            bot.send_photo(TARGET_CHANNEL_2, message.photo[-1].file_id, caption=caption_with_id)
+
         elif message.content_type == 'video':
-            bot.send_video(TARGET_CHANNEL, message.video.file_id, caption=caption)
+            bot.send_video(TARGET_CHANNEL_1, message.video.file_id, caption=caption_without_id)
+            bot.send_video(TARGET_CHANNEL_2, message.video.file_id, caption=caption_with_id)
+
         elif message.content_type == 'document':
-            bot.send_document(TARGET_CHANNEL, message.document.file_id, caption=caption)
+            bot.send_document(TARGET_CHANNEL_1, message.document.file_id, caption=caption_without_id)
+            bot.send_document(TARGET_CHANNEL_2, message.document.file_id, caption=caption_with_id)
+
         elif message.content_type == 'audio':
-            bot.send_audio(TARGET_CHANNEL, message.audio.file_id, caption=caption)
+            bot.send_audio(TARGET_CHANNEL_1, message.audio.file_id, caption=caption_without_id)
+            bot.send_audio(TARGET_CHANNEL_2, message.audio.file_id, caption=caption_with_id)
+
         elif message.content_type == 'voice':
-            bot.send_voice(TARGET_CHANNEL, message.voice.file_id, caption=caption)
+            bot.send_voice(TARGET_CHANNEL_1, message.voice.file_id, caption=caption_without_id)
+            bot.send_voice(TARGET_CHANNEL_2, message.voice.file_id, caption=caption_with_id)
+
         elif message.content_type == 'sticker':
-            bot.send_sticker(TARGET_CHANNEL, message.sticker.file_id)
+            bot.send_sticker(TARGET_CHANNEL_1, message.sticker.file_id)
+            bot.send_sticker(TARGET_CHANNEL_2, message.sticker.file_id)
+
         elif message.content_type == 'video_note':
-            bot.send_video_note(TARGET_CHANNEL, message.video_note.file_id)
+            bot.send_video_note(TARGET_CHANNEL_1, message.video_note.file_id)
+            bot.send_video_note(TARGET_CHANNEL_2, message.video_note.file_id)
+
     except Exception as e:
-        print(f"Ошибка при пересылке в канал: {e}")
+        print(f"Ошибка при пересылке в каналы: {e}")
 
 
 @bot.message_handler(content_types=[
@@ -295,18 +314,29 @@ def handle_all_messages(message):
             bot.reply_to(message, f"⛔ ВЫ ЗАБАНЕНЫ! Осталось: {remaining}")
         return
 
-    caption = f"📨 Сообщение от пользователя (ID: {user_id})"
+    # Подпись для первого канала (без ID пользователя)
+    caption_without_id = ""
     if message.caption:
-        caption += f"\n\n{message.caption}"
+        caption_without_id = message.caption
     elif message.text:
-        caption += f"\n\n{message.text}"
+        caption_without_id = message.text
 
-    forward_to_channel(message, caption)
+    # Подпись для второго канала (с ID пользователя)
+    caption_with_id = f"📨 Сообщение от пользователя (ID: {user_id})"
+    if message.caption:
+        caption_with_id += f"\n\n{message.caption}"
+    elif message.text:
+        caption_with_id += f"\n\n{message.text}"
+
+    forward_to_channels(message, caption_with_id, caption_without_id)
 
 
 if __name__ == '__main__':
     print("Бот запущен и готов к работе!")
     print(f"Следующая очистка кэша через {CACHE_CLEAN_INTERVAL} дней")
+    print(f"Сообщения будут отправляться в:")
+    print(f"1. Канал без ID: {TARGET_CHANNEL_1}")
+    print(f"2. Канал с ID: {TARGET_CHANNEL_2}")
 
 while True:
     try:
