@@ -284,10 +284,6 @@ def forward_to_channels(message, caption_with_id, caption_without_id):
             bot.send_voice(TARGET_CHANNEL_1, message.voice.file_id, caption=caption_without_id)
             bot.send_voice(TARGET_CHANNEL_2, message.voice.file_id, caption=caption_with_id)
 
-        elif message.content_type == 'sticker':
-            bot.send_sticker(TARGET_CHANNEL_1, message.sticker.file_id)
-            bot.send_sticker(TARGET_CHANNEL_2, message.sticker.file_id)
-
         elif message.content_type == 'video_note':
             bot.send_video_note(TARGET_CHANNEL_1, message.video_note.file_id)
             bot.send_video_note(TARGET_CHANNEL_2, message.video_note.file_id)
@@ -344,3 +340,4 @@ while True:
     except Exception as e:
         print(e)
         time.sleep(15)
+
