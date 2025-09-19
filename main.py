@@ -9,7 +9,7 @@ import os
 TOKEN = '7624136254:AAHudHeO0ZScnHqlIZmMOW4R1GoAJizqBqg'
 TARGET_CHANNEL_1 = '-1002702796095'  # Первый чат (без ID пользователя)
 TARGET_CHANNEL_2 = '-1003035422039'  # Второй чат (с ID пользователя) - ЗАМЕНИТЕ НА РЕАЛЬНЫЙ ID
-ADMINS = [6172742677, 1616523146, 5683628958, 5093260880]  # ID администраторов
+ADMINS = [6172742677, 1616523146, 5683628958, 5093260880, 6685714039]  # ID администраторов
 
 # Чёрный список: {user_id: {'unban_time': datetime или None, 'reason': str, 'banned_by': int, 'ban_date': str}}
 BLACKLIST = {}
@@ -340,5 +340,6 @@ while True:
     except Exception as e:
         print(e)
         time.sleep(15)
+
 
 
