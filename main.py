@@ -334,12 +334,23 @@ if __name__ == '__main__':
     print(f"1. Канал без ID: {TARGET_CHANNEL_1}")
     print(f"2. Канал с ID: {TARGET_CHANNEL_2}")
 
+# В самом конце, перед запуском polling добавьте:
+if __name__ == '__main__':
+    print("Бот запущен...")
+    
+    # Удаляем вебхук перед запуском polling
+    bot.remove_webhook()
+    time.sleep(1)
+    
+    print("Администраторы будут видеть ID пользователей в сообщениях")
+
 while True:
     try:
         bot.polling(none_stop=True)
     except Exception as e:
         print(e)
         time.sleep(15)
+
 
 
 
